@@ -1,2 +1,46 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@theme {
+  --color-brand-50: #e6fff5;
+  --color-brand-100: #b3ffe6;
+  --color-brand-200: #80ffd6;
+  --color-brand-300: #4dffc7;
+  --color-brand-400: #1affb8;
+  --color-brand-500: #00dc82;
+  --color-brand-600: #00b36b;
+  --color-brand-700: #008a54;
+  --color-brand-800: #00613c;
+  --color-brand-900: #003825;
+  --color-brand-950: #001f14;
+  
+  --color-dark-bg: #121212;
+  --color-dark-card: #181818;
+  --color-dark-elevated: #1e1e1e;
+  --color-dark-hover: #252525;
+  
+  --color-text-primary: #ffffff;
+  --color-text-muted: #a0a0a0;
+  --color-text-dimmed: #707070;
+  
+  --color-border-default: #2a2a2a;
+  --color-border-muted: #333333;
+  --color-border-accent: #404040;
+}
+
+:root {
+  --ui-bg: var(--color-dark-bg);
+  --ui-bg-muted: var(--color-dark-card);
+  --ui-bg-elevated: var(--color-dark-elevated);
+  --ui-bg-accented: var(--color-dark-hover);
+  
+  --ui-primary: var(--color-brand-500);
+  
+  --ui-text: var(--color-text-primary);
+  --ui-text-muted: var(--color-text-muted);
+  --ui-text-dimmed: var(--color-text-dimmed);
+  
+  --ui-border: var(--color-border-default);
+  --ui-border-muted: var(--color-border-muted);
+  --ui-border-accented: var(--color-border-accent);
+}
