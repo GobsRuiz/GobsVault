@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div class="layoutDefault">
+    <LayoutsSidebar />
+
     <main>
-        <slot />
+      <slot />
     </main>
   </div>
 </template>
@@ -10,6 +12,20 @@
 
 </script>
 
-<style>
+<style lang="scss">
+.layoutDefault{
+  height: 100vh;
+  display: flex;
+  box-sizing: border-box;
+  padding: 10px 10px 10px 0;
 
+  main{
+    height: 100%;
+    background-color: var(--ui-bg-accented);
+    border-radius: 30px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 30px;
+  }
+}
 </style>
