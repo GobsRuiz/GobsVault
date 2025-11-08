@@ -20,6 +20,7 @@
   padding: 10px 10px 10px 0;
 
   main{
+    width: 100%;
     height: 100%;
     background-color: var(--ui-bg-accented);
     border-radius: 30px;

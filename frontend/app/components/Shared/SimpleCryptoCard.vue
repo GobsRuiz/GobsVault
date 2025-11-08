@@ -40,6 +40,8 @@
 
 <style lang="scss">
 .simpleCryptoCard{
+    max-width: max-content;
+
     &__top{
         display: flex;
         align-items: center;
