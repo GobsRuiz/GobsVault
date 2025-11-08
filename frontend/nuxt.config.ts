@@ -22,11 +22,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: [
-    '@nuxt/ui',
-    'nuxt-charts',
-    '@pinia/nuxt',
-  ],
+  modules: ['@nuxt/ui', 'nuxt-charts', '@pinia/nuxt', '@nuxtjs/google-fonts'],
 
   colorMode: {
     preference: 'dark', 
@@ -35,6 +31,14 @@ export default defineNuxtConfig({
   },
 
   css: [
-    '~/assets/css/main.css'
+    '~/assets/css/main.css',
+    '~/assets/css/fonts.css',
+    '~/assets/css/reset.css',
   ],
+
+  googleFonts: {
+    families: {
+      Poppins: true,
+    },
+  },
 })

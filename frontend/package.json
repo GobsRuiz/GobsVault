@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nuxt/ui": "4.1.0",
+    "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.11.3",
     "nuxt": "4.1.2",
     "nuxt-charts": "^1.0.2",
