@@ -1,0 +1,27 @@
+{
+  "name": "frontend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/ui": "^4.1.0",
+    "@pinia/nuxt": "^0.11.3",
+    "nuxt": "^4.2.0",
+    "nuxt-charts": "^1.0.2",
+    "pinia": "^3.0.4",
+    "socket.io-client": "^4.8.1",
+    "vue": "^3.5.22",
+    "vue-router": "^4.6.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "sass": "^1.93.3"
+  }
+}

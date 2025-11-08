@@ -1,0 +1,9 @@
+{
+  "name": "gobsvault",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ]
+}
