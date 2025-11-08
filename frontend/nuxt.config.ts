@@ -22,16 +22,17 @@ export default defineNuxtConfig({
     },
   },
 
-  // typescript: {
-  //   strict: true,
-  //   typeCheck: true
-  // },
-
   modules: [
     '@nuxt/ui',
     'nuxt-charts',
     '@pinia/nuxt',
   ],
+
+  colorMode: {
+    preference: 'dark', 
+    fallback: 'dark',
+    classSuffix: ''
+  },
 
   css: [
     '~/assets/css/main.css'
