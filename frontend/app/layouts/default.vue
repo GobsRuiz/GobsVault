@@ -1,8 +1,10 @@
 <template>
   <div class="layoutDefault">
-    <LayoutsSidebar />
+    <LayoutsSidebar class="col-start-1 row-span-2" />
 
-    <main>
+    <LayoutsToolbar class="col-start-2 row-start-1" />
+
+    <main class="col-start-2 row-start-2">
       <slot />
     </main>
   </div>
@@ -15,9 +17,11 @@
 <style lang="scss">
 .layoutDefault{
   height: 100vh;
-  display: flex;
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  grid-template-rows: 70px auto;
   box-sizing: border-box;
-  padding: 10px 10px 10px 0;
+  padding: 0 10px 10px 0;
 
   main{
     width: 100%;
