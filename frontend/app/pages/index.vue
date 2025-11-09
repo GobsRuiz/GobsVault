@@ -1,5 +1,6 @@
 <template>
   <div>
+    <PagesOverviewTotalBalance />
     <PagesOverviewMarket />
   </div>
 </template>
