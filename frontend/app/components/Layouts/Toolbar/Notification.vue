@@ -32,6 +32,8 @@ const items: DropdownMenuItem[][] = [
 
 <style lang="scss">
 .toolbarNotification {
+  height: 20px;
+  
   &__btn {
     height: 20px;
   }
