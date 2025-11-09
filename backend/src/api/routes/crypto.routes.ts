@@ -1,10 +1,11 @@
-// backend/src/api/routes/crypto.routes.ts
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { CryptoService } from '../../application/services/crypto.service'
+import { BinanceClient } from '../../infrastructure/external/binance'
 import { AppError } from '../../shared/errors/AppError'
 
 export async function cryptoRoutes(app: FastifyInstance) {
-  const cryptoService = new CryptoService()
+  const binanceClient = new BinanceClient()
+  const cryptoService = new CryptoService(binanceClient)
 
   app.get(
     '/api/crypto/prices',
@@ -19,10 +20,10 @@ export async function cryptoRoutes(app: FastifyInstance) {
     async (req: FastifyRequest, reply: FastifyReply) => {
       try {
         const prices = await cryptoService.getPrices()
-        
-        return reply.send({ 
-          success: true, 
-          data: prices 
+
+        return reply.send({
+          success: true,
+          data: prices
         })
       } catch (error) {
         if (error instanceof AppError) {
@@ -35,8 +36,7 @@ export async function cryptoRoutes(app: FastifyInstance) {
           })
         }
 
-        // Erro inesperado
-        console.error('Unexpected error:', error)
+        req.log.error({ error }, 'Unexpected error in crypto prices endpoint')
         return reply.code(500).send({
           success: false,
           error: {

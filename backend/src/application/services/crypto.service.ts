@@ -1,28 +1,13 @@
-// backend/src/application/services/crypto.service.ts
-import axios, { AxiosError } from 'axios'
-import { cacheService } from '../../infrastructure/cache/cache.service'
-import { ExternalAPIError } from '../../shared/errors/AppError'
-
-interface CryptoPrice {
-  symbol: string
-  name: string
-  price: number
-  change24h: number
-  sparkline: number[]
-}
+import type { Logger } from 'pino'
+import { cacheService } from '../../infrastructure/cache'
+import { CryptoPrice } from '../../domain/types/crypto.types'
+import { ICryptoProvider } from '../../domain/interfaces/crypto-provider.interface'
 
 export class CryptoService {
   private readonly CACHE_KEY = 'crypto:prices'
   private readonly CACHE_TTL = 60
-  private readonly BINANCE_BASE_URL = 'https://api.binance.com/api/v3'
-  private readonly SYMBOLS = [
-    'BTCUSDT',
-    'ETHUSDT', 
-    'BNBUSDT',
-    'SOLUSDT',
-    'ADAUSDT'
-  ]
-  
+  private readonly SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'ADAUSDT'] as const
+
   private readonly CRYPTO_NAMES: Record<string, string> = {
     BTCUSDT: 'Bitcoin',
     ETHUSDT: 'Ethereum',
@@ -31,83 +16,52 @@ export class CryptoService {
     ADAUSDT: 'Cardano'
   }
 
+  constructor(
+    private readonly cryptoProvider: ICryptoProvider,
+    private readonly logger?: Logger
+  ) {}
+
   async getPrices(): Promise<CryptoPrice[]> {
-    // Tenta cache primeiro
     const cached = await cacheService.get<CryptoPrice[]>(this.CACHE_KEY)
     if (cached) {
+      this.logger?.debug({ source: 'cache' }, 'Crypto prices served from cache')
       return cached
     }
 
-    // Busca da Binance
     try {
       const prices = await Promise.all(
         this.SYMBOLS.map(symbol => this.fetchPrice(symbol))
       )
 
-      // Salva no cache
       await cacheService.set(this.CACHE_KEY, prices, this.CACHE_TTL)
+      this.logger?.debug({ source: 'provider', count: prices.length }, 'Crypto prices fetched from provider')
 
       return prices
     } catch (error) {
-      // Se houver cache antigo, retorna mesmo expirado
+      this.logger?.warn({ error }, 'Failed to fetch crypto prices from provider')
+
       const staleCache = await cacheService.get<CryptoPrice[]>(this.CACHE_KEY)
       if (staleCache) {
+        this.logger?.info('Serving stale cache due to provider failure')
         return staleCache
       }
-      
+
       throw error
     }
   }
 
   private async fetchPrice(symbol: string): Promise<CryptoPrice> {
-    try {
-      // Busca dados em paralelo
-      const [ticker, klines] = await Promise.all([
-        this.fetchTicker(symbol),
-        this.fetchKlines(symbol)
-      ])
+    const [ticker, sparkline] = await Promise.all([
+      this.cryptoProvider.getTicker(symbol),
+      this.cryptoProvider.getKlines(symbol, '1h', 7)
+    ])
 
-      return {
-        symbol: symbol.replace('USDT', ''),
-        name: this.CRYPTO_NAMES[symbol] || symbol,
-        price: parseFloat(ticker.lastPrice),
-        change24h: parseFloat(ticker.priceChangePercent),
-        sparkline: klines.map((k: any) => parseFloat(k[4]))
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError
-        throw new ExternalAPIError(
-          `Binance API error: ${axiosError.response?.status || 'Network error'}`
-        )
-      }
-      throw error
+    return {
+      symbol: symbol.replace('USDT', ''),
+      name: this.CRYPTO_NAMES[symbol] || symbol,
+      price: ticker.price,
+      change24h: ticker.change24h,
+      sparkline
     }
-  }
-
-  private async fetchTicker(symbol: string) {
-    const { data } = await axios.get(
-      `${this.BINANCE_BASE_URL}/ticker/24hr`,
-      { 
-        params: { symbol },
-        timeout: 5000 
-      }
-    )
-    return data
-  }
-
-  private async fetchKlines(symbol: string) {
-    const { data } = await axios.get(
-      `${this.BINANCE_BASE_URL}/klines`,
-      { 
-        params: { 
-          symbol, 
-          interval: '1h', 
-          limit: 7 
-        },
-        timeout: 5000
-      }
-    )
-    return data
   }
 }
