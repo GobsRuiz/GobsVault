@@ -23,19 +23,7 @@
            ${{ price.toLocaleString() }}
         </p>
 
-        <div 
-            class="simpleCryptoCard__infos__valorization"
-            :class="{ negative: change < 0 }"
-        >
-            <UIcon 
-                :name="change >= 0 ? 'ant-design:rise-outlined' : 'ant-design:fall-outlined'"  
-                size="15" 
-            />
-
-            <p>
-               {{ Math.abs(change).toFixed(2) }}%
-            </p>
-        </div>
+        <SharedVariationBadge :change="change" />
     </div>
   </UCard>
 </template>
@@ -107,26 +95,6 @@ const getIcon = (symbol: string) => {
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 5px;
-        }
-
-        &__valorization{
-            max-width: max-content;
-            display: flex;
-            align-items: center;
-            border-radius: 6px;
-            background-color: #00dc82;
-            padding: 3px 6px;
-
-            &.negative {
-                background-color: #ef4444;
-            }
-
-            p{
-                font-family: 'Britanica Expanded';
-                font-size: 10px;
-                font-weight: bold;
-                margin-left: 5px;
-            }
         }
     }
 }
