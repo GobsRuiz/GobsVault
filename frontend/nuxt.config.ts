@@ -22,7 +22,12 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxt/ui', 'nuxt-charts', '@pinia/nuxt', '@nuxtjs/google-fonts'],
+  modules: [
+    '@vueuse/nuxt',
+    '@nuxt/ui',
+    '@pinia/nuxt', 
+    '@nuxtjs/google-fonts',
+  ],
 
   colorMode: {
     preference: 'dark', 
