@@ -1,22 +1,34 @@
 import Redis from 'ioredis'
+import { env } from '../config/env.config'
 
 const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD,
-  retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000)
-    return delay
+  host: env.REDIS_HOST,
+  port: env.REDIS_PORT,
+  password: env.REDIS_PASSWORD || undefined,
+
+  connectTimeout: env.REDIS_CONNECT_TIMEOUT,
+  commandTimeout: env.REDIS_COMMAND_TIMEOUT,
+  keepAlive: 30000,
+
+  retryStrategy: (times: number) => {
+    if (times > env.REDIS_MAX_RETRIES) {
+      return null
+    }
+    return Math.min(times * 50, 2000)
   },
-  maxRetriesPerRequest: 3
-})
 
-redis.on('error', (err) => {
-  console.error('Redis connection error:', err)
-})
+  maxRetriesPerRequest: env.REDIS_MAX_RETRIES,
 
-redis.on('connect', () => {
-  console.log('Redis connected')
+  reconnectOnError: (err) => {
+    const targetError = 'READONLY'
+    if (err.message.includes(targetError)) {
+      return true
+    }
+    return false
+  },
+
+  enableOfflineQueue: true,
+  showFriendlyErrorStack: env.NODE_ENV !== 'production'
 })
 
 export { redis }
