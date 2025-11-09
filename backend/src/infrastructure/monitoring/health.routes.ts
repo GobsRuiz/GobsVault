@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import axios from 'axios'
 import { redis } from '../cache/redis.client'
+import { mongoClient } from '../database/mongodb.client'
 import { rateLimitConfigs } from '../http/plugins/rate-limit.plugin'
 import { env } from '../config/env.config'
 
@@ -11,6 +12,7 @@ interface HealthCheck {
   environment: string
   checks: {
     redis: 'healthy' | 'unhealthy'
+    mongodb: 'healthy' | 'unhealthy'
     binance: 'healthy' | 'degraded' | 'unhealthy'
   }
 }
@@ -19,6 +21,15 @@ async function checkRedis(): Promise<'healthy' | 'unhealthy'> {
   try {
     await redis.ping()
     return 'healthy'
+  } catch {
+    return 'unhealthy'
+  }
+}
+
+async function checkMongoDB(): Promise<'healthy' | 'unhealthy'> {
+  try {
+    const isHealthy = await mongoClient.isHealthy()
+    return isHealthy ? 'healthy' : 'unhealthy'
   } catch {
     return 'unhealthy'
   }
@@ -41,8 +52,9 @@ export async function healthRoutes(app: FastifyInstance) {
   app.get('/health', {
     config: { rateLimit: rateLimitConfigs.public }
   }, async (request, reply) => {
-    const [redisStatus, binanceStatus] = await Promise.all([
+    const [redisStatus, mongodbStatus, binanceStatus] = await Promise.all([
       checkRedis(),
+      checkMongoDB(),
       checkBinance()
     ])
 
@@ -53,11 +65,12 @@ export async function healthRoutes(app: FastifyInstance) {
       environment: env.NODE_ENV,
       checks: {
         redis: redisStatus,
+        mongodb: mongodbStatus,
         binance: binanceStatus
       }
     }
 
-    if (redisStatus === 'unhealthy' || binanceStatus === 'unhealthy' || binanceStatus === 'degraded') {
+    if (redisStatus === 'unhealthy' || mongodbStatus === 'unhealthy' || binanceStatus === 'unhealthy' || binanceStatus === 'degraded') {
       health.status = 'degraded'
     }
 

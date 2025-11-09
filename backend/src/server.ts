@@ -1,5 +1,6 @@
 import { buildApp } from './infrastructure/http/server'
 import { redis } from './infrastructure/cache'
+import { mongoClient } from './infrastructure/database/mongodb.client'
 import { env } from './infrastructure/config/env.config'
 import { FastifyInstance } from 'fastify'
 
@@ -11,6 +12,14 @@ async function checkRedisConnection(): Promise<void> {
   }
 }
 
+async function checkMongoDBConnection(): Promise<void> {
+  try {
+    await mongoClient.connect()
+  } catch (error) {
+    throw new Error('Failed to connect to MongoDB', { cause: error })
+  }
+}
+
 async function start() {
   const app = buildApp()
 
@@ -18,14 +27,18 @@ async function start() {
     await checkRedisConnection()
     app.log.info('Redis connection verified')
 
+    await checkMongoDBConnection()
+    app.log.info('MongoDB connection verified')
+
     await app.listen({ port: env.PORT, host: env.HOST })
-    
+
     console.log(`
       🚀 Server running!
       📍 URL: http://localhost:${env.PORT}
       🏥 Health: http://localhost:${env.PORT}/health
       🌍 Environment: ${env.NODE_ENV}
       ⚡ Redis: Connected
+      🗄️  MongoDB: Connected
     `)
   } catch (err) {
     app.log.error(err, 'Failed to start server')
@@ -45,6 +58,9 @@ function setupGracefulShutdown(app: FastifyInstance) {
 
       await redis.quit()
       app.log.info('Redis disconnected')
+
+      await mongoClient.disconnect()
+      app.log.info('MongoDB disconnected')
 
       console.log('Graceful shutdown completed')
       process.exit(0)

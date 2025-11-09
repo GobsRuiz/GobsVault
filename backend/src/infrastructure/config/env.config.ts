@@ -36,7 +36,10 @@ const envConfig = Type.Object({
   REDIS_COMMAND_TIMEOUT: Type.Number({ default: 5000, minimum: 1000, maximum: 30000 }),
 
   // Cache
-  CACHE_TTL_DEFAULT: Type.Number({ default: 300, minimum: 1 })
+  CACHE_TTL_DEFAULT: Type.Number({ default: 300, minimum: 1 }),
+
+  // MongoDB
+  MONGODB_URI: Type.String({ minLength: 1 })
 })
 
 export type EnvConfig = Static<typeof envConfig>
