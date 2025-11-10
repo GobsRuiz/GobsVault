@@ -10,6 +10,8 @@ import { registerErrorHandler } from './handlers/error.handler'
 import { healthRoutes } from '../monitoring/health.routes'
 import { cryptoRoutes } from '../../api/routes/crypto.routes'
 import { authRoutes } from '../../api/routes/auth.routes'
+import { tradeRoutes } from '../../api/routes/trade.routes'
+import { portfolioRoutes } from '../../api/routes/portfolio.routes'
 
 export function buildApp(): FastifyInstance {
   const app = Fastify({
@@ -36,6 +38,8 @@ export function buildApp(): FastifyInstance {
   app.register(healthRoutes)
   app.register(cryptoRoutes)
   app.register(authRoutes)
+  app.register(tradeRoutes)
+  app.register(portfolioRoutes)
 
   return app
 }
