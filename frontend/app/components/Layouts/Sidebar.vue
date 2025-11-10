@@ -19,27 +19,27 @@
 <script lang="ts" setup>
 const links = [
   {
-    to: "/",
+    to: "/dashboard",
     icon: "si:dashboard-line",
     text: "OVERVIEW",
   },
   {
-    to: "/portfolio",
+    to: "/dashboard/portfolio",
     icon: "f7:chart-pie",
     text: "PORTFOLIO",
   },
   {
-    to: "/trading",
+    to: "/dashboard/trading",
     icon: "streamline-freehand:trading-graph",
     text: "TRADING",
   },
   {
-    to: "/quests",
+    to: "/dashboard/quests",
     icon: "tdesign:dart-board",
     text: "QUESTS",
   },
   {
-    to: "/ranking",
+    to: "/dashboard/ranking",
     icon: "solar:ranking-line-duotone",
     text: "RANKING",
   },
