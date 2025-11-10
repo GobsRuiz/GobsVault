@@ -21,6 +21,7 @@ class MongoDBClient {
 
     try {
       await mongoose.connect(env.MONGODB_URI, {
+        dbName: 'gobsvault', // Força usar o banco correto
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000
       })
