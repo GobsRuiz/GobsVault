@@ -24,6 +24,15 @@ const envConfig = Type.Object({
 
   COOKIE_SECRET: Type.String({ minLength: 32 }),
 
+  // JWT
+  JWT_SECRET: Type.String({ minLength: 32 }),
+  JWT_REFRESH_SECRET: Type.String({ minLength: 32 }),
+  JWT_EXPIRES_IN: Type.String({ default: '15m' }),
+  JWT_REFRESH_EXPIRES_IN: Type.String({ default: '7d' }),
+
+  // Security
+  BCRYPT_ROUNDS: Type.Number({ default: 12, minimum: 10, maximum: 15 }),
+
   // Front
   ALLOWED_ORIGINS: Type.String(),
 

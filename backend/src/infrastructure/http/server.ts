@@ -9,6 +9,7 @@ import { registerLoggingHook } from './hooks/logging.hook'
 import { registerErrorHandler } from './handlers/error.handler'
 import { healthRoutes } from '../monitoring/health.routes'
 import { cryptoRoutes } from '../../api/routes/crypto.routes'
+import { authRoutes } from '../../api/routes/auth.routes'
 
 export function buildApp(): FastifyInstance {
   const app = Fastify({
@@ -18,9 +19,9 @@ export function buildApp(): FastifyInstance {
     requestTimeout: 30000
   })
 
-  // Plugins
-  app.register(securityPlugin)
+  // Plugins (CORS must be registered before security/helmet)
   app.register(corsPlugin)
+  app.register(securityPlugin)
   app.register(cookiePlugin)
   app.register(rateLimitPlugin)
 
@@ -34,6 +35,7 @@ export function buildApp(): FastifyInstance {
   // Routes
   app.register(healthRoutes)
   app.register(cryptoRoutes)
+  app.register(authRoutes)
 
   return app
 }

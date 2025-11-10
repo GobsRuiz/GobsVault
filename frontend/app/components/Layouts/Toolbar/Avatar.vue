@@ -7,9 +7,9 @@
       }"
     >
       <div class="toolbarAvatar__avatar">
-        <p>Gabriel Eduardo Ruiz</p>
+        <p>{{ user?.username || 'Guest' }}</p>
 
-        <UAvatar src="https://github.com/benjamincanac.png" />
+        <UAvatar :src="avatarUrl" />
       </div>
     </UDropdownMenu>
   </div>
@@ -18,12 +18,18 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from "@nuxt/ui";
 
-const items = ref<DropdownMenuItem[][]>([
+const { user, logout } = useAuth()
+
+const avatarUrl = computed(() => {
+  return `https://api.dicebear.com/7.x/initials/svg?seed=${user.value?.username || 'Guest'}`
+})
+
+const items = computed<DropdownMenuItem[][]>(() => [
   [
     {
-      label: "Benjamin",
+      label: user.value?.username || 'Guest',
       avatar: {
-        src: "https://github.com/benjamincanac.png",
+        src: avatarUrl.value,
       },
       type: "label",
     },
@@ -43,9 +49,10 @@ const items = ref<DropdownMenuItem[][]>([
       label: "Logout",
       icon: "i-lucide-log-out",
       color: 'error',
+      onClick: () => logout()
     },
   ],
-]);
+])
 </script>
 
 <style lang="scss">

@@ -25,12 +25,24 @@ export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
     '@nuxt/ui',
-    '@pinia/nuxt', 
+    '@vee-validate/nuxt',
+    '@pinia/nuxt',
     '@nuxtjs/google-fonts',
+    'nuxt-auth-utils',
   ],
 
+  veeValidate: {
+    autoImports: true,
+    componentNames: {
+      Form: 'VeeForm',
+      Field: 'VeeField',
+      FieldArray: 'VeeFieldArray',
+      ErrorMessage: 'VeeErrorMessage',
+    }
+  },
+
   colorMode: {
-    preference: 'dark', 
+    preference: 'dark',
     fallback: 'dark',
     classSuffix: ''
   },

@@ -7,10 +7,10 @@
   "exports": {
     ".": "./index.ts"
   },
-  "dependencies": {
-    "zod": "^3.22.4"
-  },
   "devDependencies": {
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
   }
 }
