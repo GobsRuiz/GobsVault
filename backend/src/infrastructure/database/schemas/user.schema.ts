@@ -6,7 +6,6 @@ const userSchema = new Schema<IUserDocument>(
     username: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       minlength: 3,
       maxlength: 30,
@@ -16,7 +15,6 @@ const userSchema = new Schema<IUserDocument>(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -64,7 +62,8 @@ const userSchema = new Schema<IUserDocument>(
   }
 )
 
-userSchema.index({ email: 1 })
-userSchema.index({ username: 1 })
+// Índices únicos para email e username
+userSchema.index({ email: 1 }, { unique: true })
+userSchema.index({ username: 1 }, { unique: true })
 
 export const UserModel = model<IUserDocument>('User', userSchema)
