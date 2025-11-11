@@ -23,6 +23,15 @@ export const buyTradeSchema = z.object({
     .min(10, 'Valor mínimo de trade é $10')
     .max(1000000, 'Valor máximo de trade é $1,000,000')
     .finite('Valor deve ser um número finito')
+    .refine(
+      (val) => {
+        // Verifica se tem no máximo 2 casas decimais
+        const str = val.toString()
+        const decimalPart = str.split('.')[1]
+        return !decimalPart || decimalPart.length <= 2
+      },
+      { message: 'Valor deve ter no máximo 2 casas decimais' }
+    )
 });
 
 /**
@@ -41,6 +50,15 @@ export const sellTradeSchema = z.object({
     .min(10, 'Valor mínimo de trade é $10')
     .max(1000000, 'Valor máximo de trade é $1,000,000')
     .finite('Valor deve ser um número finito')
+    .refine(
+      (val) => {
+        // Verifica se tem no máximo 2 casas decimais
+        const str = val.toString()
+        const decimalPart = str.split('.')[1]
+        return !decimalPart || decimalPart.length <= 2
+      },
+      { message: 'Valor deve ter no máximo 2 casas decimais' }
+    )
 });
 
 /**

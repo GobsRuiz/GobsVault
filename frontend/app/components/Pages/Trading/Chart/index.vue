@@ -34,12 +34,21 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const emit = defineEmits<{
+  'update:selectedSymbol': [symbol: string]
+}>()
+
 const { getCryptoColor } = useCrypto()
 
 const selectedSymbol = ref('BTC')
 
 const selectedCrypto = computed(() => {
   return props.prices.find(c => c.symbol === selectedSymbol.value)
+})
+
+// Emit selected symbol changes to parent
+watch(selectedSymbol, (newSymbol) => {
+  emit('update:selectedSymbol', newSymbol)
 })
 </script>
 
