@@ -3,6 +3,7 @@ import { PortfolioService } from '../../application/services/portfolio.service';
 import { CryptoService } from '../../application/services/crypto.service';
 import { PortfolioRepository } from '../../infrastructure/repositories/portfolio.repository';
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
+import { TradeRepository } from '../../infrastructure/repositories/trade.repository';
 import { BinanceClient } from '../../infrastructure/external/binance';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { AppError } from '../../shared/errors/AppError';
@@ -11,12 +12,14 @@ export async function portfolioRoutes(app: FastifyInstance) {
   // Initialize dependencies
   const portfolioRepository = new PortfolioRepository();
   const userRepository = new UserRepository();
+  const tradeRepository = new TradeRepository();
   const binanceClient = new BinanceClient();
   const cryptoService = new CryptoService(binanceClient);
   const portfolioService = new PortfolioService(
     portfolioRepository,
     userRepository,
-    cryptoService
+    cryptoService,
+    tradeRepository
   );
 
   /**

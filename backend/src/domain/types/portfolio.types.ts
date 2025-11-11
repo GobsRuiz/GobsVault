@@ -59,4 +59,6 @@ export interface PortfolioSummary {
   totalInvested: number;
   totalProfitLoss: number;
   totalProfitLossPercent: number;
+  todayProfitLoss: number;
+  todayProfitLossPercent: number;
 }
