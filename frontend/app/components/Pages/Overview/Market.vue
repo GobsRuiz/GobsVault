@@ -1,18 +1,19 @@
 <template>
-  <section class="overviewMarket">
-    <div class="overviewMarket__top">
+  <section class="max-w-max">
+    <div class="flex justify-between">
         <UISectionTitle>
             Market Overview
         </UISectionTitle>
 
-        <NuxtLink class="overviewMarket__top__seeAll">
+        <NuxtLink class="font-[Britanica_Expanded] text-[#bdbdbd] text-xs">
             Veja Todos
         </NuxtLink>
     </div>
 
-    <UCarousel 
-      v-slot="{ item }" 
-      :items="prices" 
+    <UCarousel
+      v-if="!loading"
+      v-slot="{ item }"
+      :items="prices"
       :ui="{ item: 'max-w-max' }"
       :watchDrag="false"
     >
@@ -25,28 +26,13 @@
         :sparkline="item.sparkline"
       />
     </UCarousel>
+
+    <div v-else class="flex gap-4 overflow-x-hidden">
+      <SharedSimpleCryptoCardSkeleton v-for="i in 5" :key="i" />
+    </div>
   </section>
 </template>
 
 <script lang="ts" setup>
 const { prices, loading } = useCrypto()
-
-console.log(prices, loading)
 </script>
-
-<style lang="scss" scoped>
-.overviewMarket{
-    max-width: max-content;
-
-    &__top{
-        display: flex;
-        justify-content: space-between;
-
-        &__seeAll{
-            font-family: 'Britanica Expanded';
-            color: #bdbdbd;
-            font-size: 12px;
-        }
-    }
-}
-</style>
