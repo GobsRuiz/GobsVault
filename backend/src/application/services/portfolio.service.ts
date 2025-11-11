@@ -49,7 +49,10 @@ export class PortfolioService {
         holding.totalInvested > 0 ? (profitLoss / holding.totalInvested) * 100 : 0;
 
       return {
-        ...holding,
+        symbol: holding.symbol,
+        amount: holding.amount,
+        averageBuyPrice: holding.averageBuyPrice,
+        totalInvested: holding.totalInvested,
         currentPrice,
         currentValue,
         profitLoss,
