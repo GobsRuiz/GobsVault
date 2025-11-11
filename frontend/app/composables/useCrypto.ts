@@ -37,10 +37,11 @@ export const useCrypto = () => {
           timeout: 10000
         }
       )
-      
+
       if (response.success && response.data) {
         prices.value = response.data
-      } else {
+      } 
+      else {
         throw new Error(response.error?.message || 'Failed to fetch prices')
       }
     } catch (err: any) {
@@ -56,10 +57,9 @@ export const useCrypto = () => {
     }
   }
 
-  // Auto-refresh a cada 10 segundos
   const { pause, resume, isActive } = useIntervalFn(
     fetchPrices, 
-    5000,
+    10000,
     { immediate: true } 
   )
 
@@ -72,13 +72,27 @@ export const useCrypto = () => {
     pause()
   })
 
-  return { 
-    prices, 
-    loading, 
-    error, 
-    fetchPrices, 
-    pause, 
+  const cryptoColors: Record<string, string> = {
+    BTC: '#f7931a',
+    ETH: '#627eea',
+    BNB: '#f3ba2f',
+    SOL: '#14f195',
+    ADA: '#0033ad'
+  }
+
+  function getCryptoColor(symbol: string): string {
+    return cryptoColors[symbol] || '#00dc82'
+  }
+
+  return {
+    prices,
+    loading,
+    error,
+    fetchPrices,
+    pause,
     resume,
-    isActive
+    isActive,
+    getCryptoColor,
+    cryptoColors
   }
 }
