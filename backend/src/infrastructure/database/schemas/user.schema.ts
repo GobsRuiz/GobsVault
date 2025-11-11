@@ -50,6 +50,12 @@ const userSchema = new Schema<IUserDocument>(
       min: 1
     },
 
+    rank: {
+      type: String,
+      enum: ['INICIANTE', 'BRONZE', 'PRATA', 'OURO', 'DIAMANTE'],
+      default: 'INICIANTE'
+    },
+
     totalTrades: {
       type: Number,
       default: 0,

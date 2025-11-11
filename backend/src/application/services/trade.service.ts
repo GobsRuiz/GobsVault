@@ -3,6 +3,7 @@ import { ITradeRepository } from '../../domain/interfaces/trade-repository.inter
 import { IPortfolioRepository } from '../../domain/interfaces/portfolio-repository.interface';
 import { IUserRepository } from '../../domain/interfaces/user-repository.interface';
 import { CryptoService } from './crypto.service';
+import { GamificationService } from './gamification.service';
 import { CryptoSymbol, TradeType } from '../../domain/types/trade.types';
 import { BadRequestError, InsufficientFundsError } from '../../shared/errors/AppError';
 
@@ -20,17 +21,23 @@ export interface ExecuteTradeResult {
   pricePerUnit: number;
   totalUSD: number;
   newBalance: number;
+  xpGained?: number;
+  leveledUp?: boolean;
+  newLevel?: number;
 }
 
 export class TradeService {
   private readonly MIN_TRADE_VALUE = 10;
+  private readonly gamificationService: GamificationService;
 
   constructor(
     private readonly tradeRepository: ITradeRepository,
     private readonly portfolioRepository: IPortfolioRepository,
     private readonly userRepository: IUserRepository,
     private readonly cryptoService: CryptoService
-  ) {}
+  ) {
+    this.gamificationService = new GamificationService();
+  }
 
   /**
    * Execute a BUY trade
@@ -103,6 +110,10 @@ export class TradeService {
 
       await session.commitTransaction();
 
+      // Award XP for the trade (outside transaction)
+      const xpCalculation = this.gamificationService.calculateXPForTrade(user.level);
+      const levelUpResult = await this.gamificationService.awardXP(userId, xpCalculation.totalXP);
+
       return {
         tradeId: trade._id.toString(),
         type: 'BUY',
@@ -110,7 +121,10 @@ export class TradeService {
         cryptoAmount,
         pricePerUnit: currentPrice,
         totalUSD: amountUSD,
-        newBalance
+        newBalance,
+        xpGained: xpCalculation.totalXP,
+        leveledUp: levelUpResult.leveledUp,
+        newLevel: levelUpResult.newLevel
       };
     } catch (error) {
       await session.abortTransaction();
@@ -193,6 +207,10 @@ export class TradeService {
 
       await session.commitTransaction();
 
+      // Award XP for the trade (outside transaction)
+      const xpCalculation = this.gamificationService.calculateXPForTrade(user.level);
+      const levelUpResult = await this.gamificationService.awardXP(userId, xpCalculation.totalXP);
+
       return {
         tradeId: trade._id.toString(),
         type: 'SELL',
@@ -200,7 +218,10 @@ export class TradeService {
         cryptoAmount,
         pricePerUnit: currentPrice,
         totalUSD: amountUSD,
-        newBalance
+        newBalance,
+        xpGained: xpCalculation.totalXP,
+        leveledUp: levelUpResult.leveledUp,
+        newLevel: levelUpResult.newLevel
       };
     } catch (error) {
       await session.abortTransaction();
