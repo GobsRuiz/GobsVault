@@ -35,8 +35,7 @@ const portfolioSchema = new Schema<IPortfolioDocument>(
     userId: {
       type: String,
       required: true,
-      unique: true,
-      index: true
+      unique: true
     },
 
     holdings: {
@@ -49,8 +48,5 @@ const portfolioSchema = new Schema<IPortfolioDocument>(
     collection: 'portfolios'
   }
 );
-
-// Ensure userId is unique
-portfolioSchema.index({ userId: 1 }, { unique: true });
 
 export const PortfolioModel = model<IPortfolioDocument>('Portfolio', portfolioSchema);
