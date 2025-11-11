@@ -12,6 +12,7 @@ import { cryptoRoutes } from '../../api/routes/crypto.routes'
 import { authRoutes } from '../../api/routes/auth.routes'
 import { tradeRoutes } from '../../api/routes/trade.routes'
 import { portfolioRoutes } from '../../api/routes/portfolio.routes'
+import { userRoutes } from '../../api/routes/user.routes'
 
 export function buildApp(): FastifyInstance {
   const app = Fastify({
@@ -38,6 +39,7 @@ export function buildApp(): FastifyInstance {
   app.register(healthRoutes)
   app.register(cryptoRoutes)
   app.register(authRoutes)
+  app.register(userRoutes)
   app.register(tradeRoutes)
   app.register(portfolioRoutes)
 
