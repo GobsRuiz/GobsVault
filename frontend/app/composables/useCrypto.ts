@@ -38,6 +38,8 @@ export const useCrypto = () => {
         }
       )
 
+      // await new Promise(resolve => setTimeout(resolve, 2000))
+
       if (response.success && response.data) {
         prices.value = response.data
       } 
@@ -72,18 +74,6 @@ export const useCrypto = () => {
     pause()
   })
 
-  const cryptoColors: Record<string, string> = {
-    BTC: '#f7931a',
-    ETH: '#627eea',
-    BNB: '#f3ba2f',
-    SOL: '#14f195',
-    ADA: '#0033ad'
-  }
-
-  function getCryptoColor(symbol: string): string {
-    return cryptoColors[symbol] || '#00dc82'
-  }
-
   return {
     prices,
     loading,
@@ -91,8 +81,6 @@ export const useCrypto = () => {
     fetchPrices,
     pause,
     resume,
-    isActive,
-    getCryptoColor,
-    cryptoColors
+    isActive
   }
 }
