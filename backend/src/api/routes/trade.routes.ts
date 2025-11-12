@@ -5,6 +5,9 @@ import { TradeRepository } from '../../infrastructure/repositories/trade.reposit
 import { PortfolioRepository } from '../../infrastructure/repositories/portfolio.repository';
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
 import { BinanceClient } from '../../infrastructure/external/binance';
+import { CacheService } from '../../infrastructure/cache/cache.service';
+import { TokenBlacklistService } from '../../infrastructure/cache/token-blacklist.service';
+import { redis } from '../../infrastructure/cache/redis.client';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { buyTradeSchema, sellTradeSchema, tradeHistoryQuerySchema } from '../../../../shared/schemas/trade.schema';
 import { AppError, ValidationError } from '../../shared/errors/AppError';
@@ -23,6 +26,9 @@ export async function tradeRoutes(app: FastifyInstance) {
     userRepository,
     cryptoService
   );
+  const cacheService = new CacheService(redis);
+  const tokenBlacklistService = new TokenBlacklistService(cacheService);
+  const authHandler = authMiddleware(tokenBlacklistService);
 
   /**
    * POST /api/trades/buy
@@ -31,7 +37,7 @@ export async function tradeRoutes(app: FastifyInstance) {
   app.post(
     '/api/trades/buy',
     {
-      preHandler: [authMiddleware],
+      preHandler: [authHandler],
       config: {
         rateLimit: {
           max: 4,
@@ -96,7 +102,7 @@ export async function tradeRoutes(app: FastifyInstance) {
   app.post(
     '/api/trades/sell',
     {
-      preHandler: [authMiddleware],
+      preHandler: [authHandler],
       config: {
         rateLimit: {
           max: 4,
@@ -161,7 +167,7 @@ export async function tradeRoutes(app: FastifyInstance) {
   app.get(
     '/api/trades/history',
     {
-      preHandler: [authMiddleware]
+      preHandler: [authHandler]
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
@@ -219,7 +225,7 @@ export async function tradeRoutes(app: FastifyInstance) {
   app.get(
     '/api/trades/stats',
     {
-      preHandler: [authMiddleware]
+      preHandler: [authHandler]
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {

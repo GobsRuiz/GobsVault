@@ -8,6 +8,11 @@ export interface JWTPayload {
   username: string
 }
 
+export interface JWTPayloadWithMeta extends JWTPayload {
+  iat: number
+  exp: number
+}
+
 export interface TokenPair {
   accessToken: string
   refreshToken: string
@@ -33,9 +38,9 @@ export class JWTUtils {
     }
   }
 
-  static verifyAccessToken(token: string): JWTPayload {
+  static verifyAccessToken(token: string): JWTPayloadWithMeta {
     try {
-      return jwt.verify(token, env.JWT_SECRET) as JWTPayload
+      return jwt.verify(token, env.JWT_SECRET) as JWTPayloadWithMeta
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         throw new UnauthorizedError('Token expirado')
@@ -47,9 +52,9 @@ export class JWTUtils {
     }
   }
 
-  static verifyRefreshToken(token: string): JWTPayload {
+  static verifyRefreshToken(token: string): JWTPayloadWithMeta {
     try {
-      return jwt.verify(token, env.JWT_REFRESH_SECRET) as JWTPayload
+      return jwt.verify(token, env.JWT_REFRESH_SECRET) as JWTPayloadWithMeta
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         throw new UnauthorizedError('Refresh token expirado')
@@ -61,7 +66,7 @@ export class JWTUtils {
     }
   }
 
-  static decode(token: string): JWTPayload | null {
-    return jwt.decode(token) as JWTPayload | null
+  static decode(token: string): JWTPayloadWithMeta | null {
+    return jwt.decode(token) as JWTPayloadWithMeta | null
   }
 }

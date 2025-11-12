@@ -2,6 +2,7 @@
  * User composable
  * Handles user data fetching with fresh data from backend
  */
+import { logger } from '~/utils/logger'
 
 interface User {
   id: string
@@ -28,7 +29,7 @@ export const useUser = () => {
     userLoading.value = true
     userError.value = null
 
-    console.log('[useUser] Fetching fresh user data...')
+    logger.log('[useUser] Fetching fresh user data...')
 
     try {
       const response = await $fetch<{ success: boolean; data: User }>(
@@ -39,15 +40,15 @@ export const useUser = () => {
         }
       )
 
-      console.log('[useUser] User response:', response)
+      logger.log('[useUser] User response:', response)
 
       if (response.success) {
         userData.value = response.data
-        console.log('[useUser] User data updated:', userData.value)
+        logger.log('[useUser] User data updated:', userData.value)
       }
     } catch (err: any) {
       userError.value = err.data?.error?.message || 'Erro ao buscar dados do usuário'
-      console.error('[useUser] User fetch error:', err)
+      logger.error('[useUser] User fetch error:', err)
     } finally {
       userLoading.value = false
     }

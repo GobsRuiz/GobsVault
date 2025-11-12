@@ -5,6 +5,9 @@ import { PortfolioRepository } from '../../infrastructure/repositories/portfolio
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
 import { TradeRepository } from '../../infrastructure/repositories/trade.repository';
 import { BinanceClient } from '../../infrastructure/external/binance';
+import { CacheService } from '../../infrastructure/cache/cache.service';
+import { TokenBlacklistService } from '../../infrastructure/cache/token-blacklist.service';
+import { redis } from '../../infrastructure/cache/redis.client';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { AppError } from '../../shared/errors/AppError';
 
@@ -21,6 +24,9 @@ export async function portfolioRoutes(app: FastifyInstance) {
     cryptoService,
     tradeRepository
   );
+  const cacheService = new CacheService(redis);
+  const tokenBlacklistService = new TokenBlacklistService(cacheService);
+  const authHandler = authMiddleware(tokenBlacklistService);
 
   /**
    * GET /api/portfolio
@@ -29,7 +35,7 @@ export async function portfolioRoutes(app: FastifyInstance) {
   app.get(
     '/api/portfolio',
     {
-      preHandler: [authMiddleware]
+      preHandler: [authHandler]
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
@@ -71,7 +77,7 @@ export async function portfolioRoutes(app: FastifyInstance) {
   app.get(
     '/api/portfolio/summary',
     {
-      preHandler: [authMiddleware]
+      preHandler: [authHandler]
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {

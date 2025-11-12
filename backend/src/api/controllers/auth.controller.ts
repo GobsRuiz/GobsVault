@@ -157,4 +157,60 @@ export class AuthController {
       throw error
     }
   }
+
+  async logout(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    try {
+      // Obtém os tokens dos cookies
+      const accessToken = request.cookies.accessToken
+      const refreshToken = request.cookies.refreshToken
+
+      if (accessToken || refreshToken) {
+        // Adiciona os tokens à blacklist
+        await this.authService.logout(
+          accessToken || '',
+          refreshToken
+        )
+      }
+
+      // Remove os cookies
+      reply.clearCookie('accessToken', { path: '/' })
+      reply.clearCookie('refreshToken', { path: '/' })
+
+      reply.code(200).send({
+        success: true,
+        message: 'Logout realizado com sucesso'
+      })
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError('Dados inválidos', error.errors)
+      }
+      throw error
+    }
+  }
+
+  async logoutAll(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    try {
+      // Precisa estar autenticado para fazer logout-all
+      if (!request.user) {
+        throw new ValidationError('Usuário não autenticado')
+      }
+
+      // Revoga todos os tokens do usuário
+      await this.authService.logoutAll(request.user.userId)
+
+      // Remove os cookies do dispositivo atual
+      reply.clearCookie('accessToken', { path: '/' })
+      reply.clearCookie('refreshToken', { path: '/' })
+
+      reply.code(200).send({
+        success: true,
+        message: 'Logout de todos os dispositivos realizado com sucesso'
+      })
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError('Dados inválidos', error.errors)
+      }
+      throw error
+    }
+  }
 }

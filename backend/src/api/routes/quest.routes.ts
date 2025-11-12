@@ -3,6 +3,9 @@ import { QuestService } from '../../application/services/quest.service';
 import { QuestRepository } from '../../infrastructure/repositories/quest.repository';
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
 import { PortfolioRepository } from '../../infrastructure/repositories/portfolio.repository';
+import { CacheService } from '../../infrastructure/cache/cache.service';
+import { TokenBlacklistService } from '../../infrastructure/cache/token-blacklist.service';
+import { redis } from '../../infrastructure/cache/redis.client';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { AppError } from '../../shared/errors/AppError';
 import { ZodError } from 'zod';
@@ -17,6 +20,9 @@ export async function questRoutes(app: FastifyInstance) {
     userRepository,
     portfolioRepository
   );
+  const cacheService = new CacheService(redis);
+  const tokenBlacklistService = new TokenBlacklistService(cacheService);
+  const authHandler = authMiddleware(tokenBlacklistService);
 
   /**
    * GET /api/quests
@@ -25,7 +31,7 @@ export async function questRoutes(app: FastifyInstance) {
   app.get(
     '/api/quests',
     {
-      preHandler: [authMiddleware]
+      preHandler: [authHandler]
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
@@ -67,7 +73,7 @@ export async function questRoutes(app: FastifyInstance) {
   app.get(
     '/api/quests/completed',
     {
-      preHandler: [authMiddleware]
+      preHandler: [authHandler]
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
@@ -112,7 +118,7 @@ export async function questRoutes(app: FastifyInstance) {
   app.get(
     '/api/quests/available',
     {
-      preHandler: [authMiddleware]
+      preHandler: [authHandler]
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
@@ -157,7 +163,7 @@ export async function questRoutes(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
     '/api/quests/:id/claim',
     {
-      preHandler: [authMiddleware],
+      preHandler: [authHandler],
       config: {
         rateLimit: {
           max: 10,

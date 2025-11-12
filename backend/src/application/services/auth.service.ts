@@ -116,7 +116,7 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string): Promise<TokenPair> {
-    // Verifica o refresh token
+    // Verifica o refresh token (já retorna payload com iat e exp)
     const payload = JWTUtils.verifyRefreshToken(refreshToken)
 
     // Verifica se o usuário ainda existe e está ativo
@@ -131,13 +131,25 @@ export class AuthService {
 
     // Verifica se o token do usuário foi revogado
     if (this.tokenBlacklistService) {
-      const decoded = JWTUtils.decode(refreshToken) as any
       const isRevoked = await this.tokenBlacklistService.areUserTokensRevoked(
         payload.userId,
-        decoded.iat
+        payload.iat
       )
       if (isRevoked) {
         throw new UnauthorizedError('Token revogado')
+      }
+
+      // REFRESH TOKEN ROTATION: Invalida o refresh token atual
+      // Isso garante que cada refresh token só pode ser usado uma vez
+      await this.tokenBlacklistService.addToken(refreshToken)
+    }
+
+    // Verifica se a senha foi alterada após a emissão do token
+    if (user.passwordChangedAt) {
+      const tokenIssuedAt = payload.iat * 1000 // Converte para milliseconds
+
+      if (user.passwordChangedAt.getTime() > tokenIssuedAt) {
+        throw new UnauthorizedError('Senha foi alterada. Por favor, faça login novamente')
       }
     }
 
@@ -150,7 +162,10 @@ export class AuthService {
   }
 
   async logout(accessToken: string, refreshToken?: string): Promise<void> {
-    if (!this.tokenBlacklistService) return
+    if (!this.tokenBlacklistService) {
+      Logger.warn('Token blacklist service não disponível - logout não invalidará tokens')
+      return
+    }
 
     // Adiciona access token à blacklist
     await this.tokenBlacklistService.addToken(accessToken)
@@ -162,7 +177,10 @@ export class AuthService {
   }
 
   async logoutAll(userId: string): Promise<void> {
-    if (!this.tokenBlacklistService) return
+    if (!this.tokenBlacklistService) {
+      Logger.warn('Token blacklist service não disponível - logoutAll não invalidará tokens')
+      return
+    }
 
     // Revoga todos os tokens do usuário
     await this.tokenBlacklistService.revokeAllUserTokens(userId)

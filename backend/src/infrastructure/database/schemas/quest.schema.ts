@@ -43,7 +43,7 @@ const questSchema = new Schema<IQuestDocument>(
   }
 );
 
-// Index for efficient queries
-questSchema.index({ title: 1 });
+// Note: title já tem índice único via { unique: true }
+// Não é necessário criar índice explícito duplicado
 
 export const QuestModel = model<IQuestDocument>('Quest', questSchema);

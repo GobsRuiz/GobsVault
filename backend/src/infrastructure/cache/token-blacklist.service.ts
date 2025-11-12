@@ -86,7 +86,7 @@ export class TokenBlacklistService {
   async removeUserRevocation(userId: string): Promise<void> {
     try {
       const key = `${TokenBlacklistService.BLACKLIST_USER_PREFIX}${userId}`
-      await this.cacheService.delete(key)
+      await this.cacheService.del(key)
     } catch (error) {
       console.error('Erro ao remover revogação do usuário:', error)
     }

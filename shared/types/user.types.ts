@@ -13,6 +13,7 @@ export interface IUserBase {
   rank: 'INICIANTE' | 'BRONZE' | 'PRATA' | 'OURO' | 'DIAMANTE'
 
   totalTrades: number
+  passwordChangedAt?: Date
   questProgress: Array<{
     questId: string
     progress: number

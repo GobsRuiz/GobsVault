@@ -13,7 +13,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<IUserDocument | null> {
-    return await UserModel.findById(id).select('+password')
+    return await UserModel.findById(id).select('+password +passwordChangedAt')
   }
 
   async findByEmail(email: string): Promise<IUserDocument | null> {

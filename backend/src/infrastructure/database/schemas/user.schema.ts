@@ -62,6 +62,11 @@ const userSchema = new Schema<IUserDocument>(
       min: 0
     },
 
+    passwordChangedAt: {
+      type: Date,
+      select: false
+    },
+
     questProgress: [
       {
         questId: {

@@ -1,3 +1,5 @@
+import { logger } from '~/utils/logger'
+
 interface RegisterData {
   username: string
   email: string
@@ -83,7 +85,7 @@ export const useAuth = () => {
       await clear()
       await router.push('/')
     } catch (err) {
-      console.error('Logout error:', err)
+      logger.error('Logout error:', err)
     }
   }
 
