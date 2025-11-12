@@ -2,6 +2,7 @@
  * Trading composable
  * Handles buy/sell operations and trade history
  */
+import { logger } from '~/utils/logger'
 
 interface BuyTradeRequest {
   symbol: string
@@ -143,7 +144,7 @@ export const useTrade = () => {
       }
     } catch (err: any) {
       error.value = err.data?.error?.message || 'Erro ao buscar histórico'
-      console.error('Trade history error:', err)
+      logger.error('Trade history error:', err)
     } finally {
       loading.value = false
     }
@@ -166,7 +167,7 @@ export const useTrade = () => {
         stats.value = response.data
       }
     } catch (err: any) {
-      console.error('Trade stats error:', err)
+      logger.error('Trade stats error:', err)
     }
   }
 

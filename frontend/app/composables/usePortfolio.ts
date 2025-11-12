@@ -3,36 +3,7 @@
  * Handles portfolio data and calculations
  */
 
-interface Holding {
-  symbol: string
-  amount: number
-  averageBuyPrice: number
-  totalInvested: number
-  currentPrice: number
-  currentValue: number
-  profitLoss: number
-  profitLossPercent: number
-}
-
-interface Portfolio {
-  id: string
-  userId: string
-  holdings: Holding[]
-  updatedAt: Date
-  totalPortfolioValue: number
-  totalInvested: number
-  totalProfitLoss: number
-  totalProfitLossPercent: number
-}
-
-interface PortfolioSummary {
-  balance: number
-  portfolioValue: number
-  netWorth: number
-  totalInvested: number
-  totalProfitLoss: number
-  totalProfitLossPercent: number
-}
+import type { Portfolio, PortfolioSummary, HoldingWithValue, CryptoSymbol } from '~/shared/types/portfolio.types'
 
 export const usePortfolio = () => {
   const config = useRuntimeConfig()
@@ -104,7 +75,7 @@ export const usePortfolio = () => {
   /**
    * Get specific holding by symbol
    */
-  const getHolding = (symbol: string): Holding | undefined => {
+  const getHolding = (symbol: CryptoSymbol): HoldingWithValue | undefined => {
     return portfolio.value?.holdings.find(h => h.symbol === symbol)
   }
 
