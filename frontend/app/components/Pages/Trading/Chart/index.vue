@@ -38,7 +38,7 @@ const emit = defineEmits<{
   'update:selectedSymbol': [symbol: string]
 }>()
 
-const { getCryptoColor } = useCrypto()
+const { getCryptoColor } = useCryptoMetadata()
 
 const selectedSymbol = ref('BTC')
 
