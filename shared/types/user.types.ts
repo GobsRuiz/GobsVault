@@ -10,8 +10,17 @@ export interface IUserBase {
   balance: number
   xp: number
   level: number
+  rank: 'INICIANTE' | 'BRONZE' | 'PRATA' | 'OURO' | 'DIAMANTE'
 
   totalTrades: number
+  questProgress: Array<{
+    questId: string
+    progress: number
+    completed: boolean
+    claimed: boolean
+    completedAt?: Date
+    claimedAt?: Date
+  }>
 }
 
 export interface IUser extends IUserBase {

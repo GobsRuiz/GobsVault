@@ -60,7 +60,35 @@ const userSchema = new Schema<IUserDocument>(
       type: Number,
       default: 0,
       min: 0
-    }
+    },
+
+    questProgress: [
+      {
+        questId: {
+          type: String,
+          required: true
+        },
+        progress: {
+          type: Number,
+          default: 0,
+          min: 0
+        },
+        completed: {
+          type: Boolean,
+          default: false
+        },
+        claimed: {
+          type: Boolean,
+          default: false
+        },
+        completedAt: {
+          type: Date
+        },
+        claimedAt: {
+          type: Date
+        }
+      }
+    ]
   },
   {
     timestamps: true,
