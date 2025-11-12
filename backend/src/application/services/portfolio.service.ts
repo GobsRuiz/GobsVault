@@ -1,11 +1,13 @@
 import { IPortfolioRepository } from '../../domain/interfaces/portfolio-repository.interface';
 import { IUserRepository } from '../../domain/interfaces/user-repository.interface';
 import { ITradeRepository } from '../../domain/interfaces/trade-repository.interface';
+import { IPortfolioSnapshotRepository } from '../../domain/interfaces/portfolio-snapshot-repository.interface';
 import { CryptoService } from './crypto.service';
 import {
   PortfolioWithValues,
   HoldingWithValue,
   PortfolioSummary,
+  PortfolioSnapshot,
   CryptoSymbol
 } from '../../domain/types/portfolio.types';
 import { BadRequestError } from '../../shared/errors/AppError';
@@ -15,7 +17,8 @@ export class PortfolioService {
     private readonly portfolioRepository: IPortfolioRepository,
     private readonly userRepository: IUserRepository,
     private readonly cryptoService: CryptoService,
-    private readonly tradeRepository: ITradeRepository
+    private readonly tradeRepository: ITradeRepository,
+    private readonly snapshotRepository: IPortfolioSnapshotRepository
   ) {}
 
   /**
@@ -195,5 +198,46 @@ export class PortfolioService {
       todayProfitLoss: today.profitLoss,
       todayProfitLossPercent: today.percent
     };
+  }
+
+  /**
+   * Get portfolio history for a date range
+   * @param userId - User ID
+   * @param days - Number of days to look back (default: 30)
+   */
+  async getPortfolioHistory(userId: string, days: number = 30): Promise<PortfolioSnapshot[]> {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    return this.snapshotRepository.findByUserIdAndDateRange(userId, startDate, endDate);
+  }
+
+  /**
+   * Create a snapshot of current portfolio value
+   * Should be called daily by a cron job
+   * @param userId - User ID
+   */
+  async createPortfolioSnapshot(userId: string): Promise<PortfolioSnapshot> {
+    // Check if snapshot already exists for today
+    const today = new Date();
+    const exists = await this.snapshotRepository.existsForDate(userId, today);
+
+    if (exists) {
+      throw new BadRequestError('Snapshot já existe para hoje');
+    }
+
+    // Get current portfolio values
+    const portfolio = await this.getPortfolioWithValues(userId);
+
+    // Create snapshot
+    return this.snapshotRepository.create({
+      userId,
+      date: today,
+      totalValue: portfolio.totalPortfolioValue,
+      totalInvested: portfolio.totalInvested,
+      profitLoss: portfolio.totalProfitLoss,
+      profitLossPercent: portfolio.totalProfitLossPercent
+    });
   }
 }

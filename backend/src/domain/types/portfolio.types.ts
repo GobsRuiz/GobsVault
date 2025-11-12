@@ -62,3 +62,18 @@ export interface PortfolioSummary {
   todayProfitLoss: number;
   todayProfitLossPercent: number;
 }
+
+/**
+ * Portfolio snapshot for historical tracking
+ */
+export interface PortfolioSnapshot {
+  id: string;
+  userId: string;
+  date: Date;
+  totalValue: number;
+  totalInvested: number;
+  profitLoss: number;
+  profitLossPercent: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
