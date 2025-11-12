@@ -63,3 +63,15 @@ export class NotFoundError extends AppError {
     super(message, 404, 'NOT_FOUND_ERROR')
   }
 }
+
+export class BadRequestError extends AppError {
+  constructor(message: string = 'Bad request') {
+    super(message, 400, 'BAD_REQUEST_ERROR')
+  }
+}
+
+export class InsufficientFundsError extends AppError {
+  constructor(message: string = 'Insufficient funds') {
+    super(message, 400, 'INSUFFICIENT_FUNDS_ERROR')
+  }
+}
